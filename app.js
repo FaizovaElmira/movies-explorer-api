@@ -25,7 +25,7 @@ app.use(helmet()); // промежуточное ПО безопасности
 // app.use(limiter); // ПО промежуточного слоя для ограничения скорости
 
 app.use(cors({
-  origin: ['https://diploma.faizova.nomoreparties.co', 'http://diploma.faizova.nomoreparties.co'],
+  origin: ['https://faizova.movies-explorer.nomoreparties.co', 'http://faizova.movies-explorer.nomoreparties.co'],
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 })); // Промежуточное ПО CORS
