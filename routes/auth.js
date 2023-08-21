@@ -1,11 +1,9 @@
-const authRoutes = require('express').Router();
-const { validateSignIn, validateSignUp } = require('../middlewares/validate');
-const {
-  login,
-  createUser,
-} = require('../controllers/auth');
+const express = require('express');
+const { signUp, signIn } = require('../controllers/auth');
 
-authRoutes.post('/signin', validateSignIn, login);
-authRoutes.post('/signup', validateSignUp, createUser);
+const router = express.Router();
 
-module.exports = authRoutes;
+router.post('/signup', signUp);
+router.post('/signin', signIn);
+
+module.exports = router;

@@ -20,12 +20,10 @@ const authMiddleware = (req, res, next) => {
     const secret = NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret';
     const payload = jwt.verify(token, secret);
     req.user = payload;
-    next();
+    return next();
   } catch (err) {
-    throw new UnauthorizedError('Ошибка авторизации');
+    return next(new UnauthorizedError('Ошибка авторизации'));
   }
-
-  return next();
 };
 
 module.exports = authMiddleware;

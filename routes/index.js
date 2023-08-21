@@ -2,14 +2,23 @@ const express = require('express');
 const userRoutes = require('./users');
 const moviesRoutes = require('./movies');
 const authRoutes = require('./auth');
+const authMiddleware = require('../middlewares/auth');
+const { validateSignIn, validateSignUp } = require('../middlewares/validate');
+const NotFoundError = require('../errors/NotFoundError');
 
-const routes = express.Router();
+const router = express.Router();
 
 // Публичные роуты
-routes.use('/auth', authRoutes);
+router.post('/signin', validateSignIn, authRoutes);
+router.post('/signup', validateSignUp, authRoutes);
 
 // Роуты, которые требуют авторизации
-routes.use('/users', userRoutes);
-routes.use('/movies', moviesRoutes);
+router.use('/users', authMiddleware, userRoutes);
+router.use('/movies', authMiddleware, moviesRoutes);
 
-module.exports = routes;
+// Обработка несуществующих маршрутов
+router.use('/', (req, res, next) => {
+  next(new NotFoundError('Страница по указанному маршруту не найдена'));
+});
+
+module.exports = router;
