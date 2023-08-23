@@ -7,7 +7,6 @@ const cors = require('cors');
 const rateLimiter = require('./middlewares/rateLimiter');
 const handleErrors = require('./errors/handleErrors');
 const routes = require('./routes');
-const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { connectDB, PORT } = require('./utils/config');
 
@@ -22,7 +21,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-app.use(auth);
 app.use(requestLogger);
 app.use(rateLimiter);
 app.use(helmet());
