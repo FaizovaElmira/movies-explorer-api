@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const { duplicateEmail, invalidData, wrongCredentials } = require('../utils/constants');
 const BadRequestError = require('../errors/BadRequestError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
@@ -11,7 +12,7 @@ const signUp = async (req, res, next) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      throw new ConflictError('Этот электронный адрес уже используется');
+      throw new ConflictError(duplicateEmail);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,7 +26,7 @@ const signUp = async (req, res, next) => {
     return res.status(201).send({ _id, name: userName, email: userEmail });
   } catch (error) {
     if (error.name === 'ValidationError') {
-      return next(new BadRequestError('Предоставлены неверные данные'));
+      return next(new BadRequestError(invalidData));
     }
     return next(error);
   }
@@ -44,7 +45,7 @@ const signIn = async (req, res, next) => {
 
     res.send({ token });
   } catch (error) {
-    next(new UnauthorizedError('Неправильные почта или пароль.'));
+    next(new UnauthorizedError(wrongCredentials));
   }
 };
 

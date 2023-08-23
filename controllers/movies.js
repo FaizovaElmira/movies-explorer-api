@@ -2,6 +2,13 @@ const Movie = require('../models/movie');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
+const {
+  invalidMovieData,
+  movieNotFound,
+  unauthorizedToDeleteMovie,
+  invalidMovieIdData,
+  movieDeleted,
+} = require('../utils/constants');
 
 const getMovies = async (req, res, next) => {
   try {
@@ -19,7 +26,7 @@ const createMovie = async (req, res, next) => {
     res.status(201).send(movie);
   } catch (error) {
     if (error.name === 'ValidationError') {
-      next(new BadRequestError('Переданы некорректные данные при создании фильма.'));
+      next(new BadRequestError(invalidMovieData));
     } else {
       next(error);
     }
@@ -33,18 +40,18 @@ const deleteMovie = async (req, res, next) => {
 
     const movie = await Movie.findById(movieId);
     if (!movie) {
-      throw new NotFoundError('Фильм с указанным _id не найден');
+      throw new NotFoundError(movieNotFound);
     }
 
     if (movie.owner.toString() !== userId) {
-      throw new ForbiddenError('Нет прав для удаления фильма');
+      throw new ForbiddenError(unauthorizedToDeleteMovie);
     }
 
     await movie.deleteOne();
-    res.status(200).send({ message: 'Фильм удален' });
+    res.status(200).send({ message: movieDeleted });
   } catch (error) {
     if (error.name === 'CastError') {
-      next(new BadRequestError('Переданы некорректные данные при удалении фильма'));
+      next(new BadRequestError(invalidMovieIdData));
     } else {
       next(error);
     }

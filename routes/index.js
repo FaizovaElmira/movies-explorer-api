@@ -5,6 +5,7 @@ const authRoutes = require('./auth');
 const authMiddleware = require('../middlewares/auth');
 const { validateSignIn, validateSignUp } = require('../middlewares/validate');
 const NotFoundError = require('../errors/NotFoundError');
+const { pageNotFound } = require('../utils/constants');
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.use('/movies', authMiddleware, moviesRoutes);
 
 // Обработка несуществующих маршрутов
 router.use('/', (req, res, next) => {
-  next(new NotFoundError('Страница по указанному маршруту не найдена'));
+  next(new NotFoundError(pageNotFound));
 });
 
 module.exports = router;

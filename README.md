@@ -6,6 +6,6 @@
 
 ## Ссылки на проект
 
-IP 158.160.115.142
+IP 158.160.117.130
 
 Backend https://api.faizova.diploma.nomoreparties.co;

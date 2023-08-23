@@ -4,6 +4,7 @@ const validator = require('validator');
 const { Schema, ObjectId } = mongoose;
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
+const { movieNotFound, unauthorizedToDeleteMovie, invalidUrl } = require('../utils/constants');
 
 const movieSchema = new Schema({
   country: {
@@ -31,7 +32,7 @@ const movieSchema = new Schema({
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
-      message: 'Некорректный url адрес',
+      message: invalidUrl,
     },
   },
   trailerLink: {
@@ -39,7 +40,7 @@ const movieSchema = new Schema({
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
-      message: 'Некорректный url адрес',
+      message: invalidUrl,
     },
   },
   thumbnail: {
@@ -47,7 +48,7 @@ const movieSchema = new Schema({
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
-      message: 'Некорректный url адрес',
+      message: invalidUrl,
     },
   },
   owner: {
@@ -72,10 +73,10 @@ const movieSchema = new Schema({
 movieSchema.statics.delJustOwnMovie = async function deleteMovie(movieId, userId) {
   const movie = await this.findById(movieId);
   if (!movie) {
-    throw new NotFoundError('Фильм с указанным _id не найден');
+    throw new NotFoundError(movieNotFound);
   }
   if (movie.owner.toString() !== userId) {
-    throw new ForbiddenError('Нет доступа на удаление чужого фильма');
+    throw new ForbiddenError(unauthorizedToDeleteMovie);
   }
   await movie.deleteOne();
 };

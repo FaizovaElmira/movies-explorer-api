@@ -1,5 +1,7 @@
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
+const { userNotFound, duplicateEmailConflict } = require('../utils/constants');
 
 const getUserInfo = async (req, res, next) => {
   try {
@@ -7,13 +9,15 @@ const getUserInfo = async (req, res, next) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      throw new NotFoundError('Пользователя не существует');
+      throw new NotFoundError(userNotFound);
     }
 
-    res.send({
+    const userInfo = {
       email: user.email,
       name: user.name,
-    });
+    };
+
+    res.status(200).send(userInfo);
   } catch (error) {
     next(error);
   }
@@ -31,12 +35,16 @@ const updateUserInfo = async (req, res, next) => {
     );
 
     if (!updatedUserInfo) {
-      throw new NotFoundError('Пользователя не существует');
+      throw new NotFoundError(userNotFound);
     }
 
-    res.send({ data: updatedUserInfo });
+    res.status(200).send({ data: updatedUserInfo });
   } catch (error) {
-    next(error);
+    if (error.name === 'MongoError' && error.code === 11000) {
+      next(new ConflictError(duplicateEmailConflict));
+    } else {
+      next(error);
+    }
   }
 };
 
