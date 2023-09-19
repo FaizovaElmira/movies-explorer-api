@@ -43,7 +43,7 @@ const signIn = async (req, res, next) => {
       { expiresIn: '7d' },
     );
 
-    res.send({ token });
+    res.send({ user, token });
   } catch (error) {
     next(new UnauthorizedError(wrongCredentials));
   }
